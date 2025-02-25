@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI
 from pydantic import BaseModel
 import pandas as pd
@@ -23,6 +24,10 @@ def generate_plot(plot_func):
     buf.seek(0)
     return base64.b64encode(buf.getvalue()).decode("utf-8")
 
+@app.get("/")
+def read_root():
+    return {"message": "Titanic Chatbot is Running Successfully!"}
+
 @app.post("/query")
 def answer_query(query: Query):
     q = query.question.lower()
@@ -45,3 +50,9 @@ def answer_query(query: Query):
     
     else:
         return {"answer": "I can't answer that yet. Try asking about passenger demographics, fares, or embarkation points!"}
+
+# Start the server with the correct port
+if __name__ == "__main__":
+    import uvicorn
+    PORT = int(os.environ.get("PORT", 10000))  # Render's dynamic port
+    uvicorn.run(app, host="0.0.0.0", port=PORT)
